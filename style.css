@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+
+:root{
+	--white-color: #fff;
+	--primary-color:#2A265F;
+}
+
+*{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+	background-image: linear-gradient(45deg, #7175da, #9790F2);
+	font-family: 'Muli', sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+h1{
+	margin: 20px;
+	color:var(--primary-color);
+}
+
+/* #grafico-dolar{
+	width:100%;
+	height: 100%;
+	padding: 0.5em;
+} */
+
+.card__btn{
+	border-radius: 50px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	font-size: 16px;
+	padding: 12px 25px;
+	letter-spacing: 1px;
+}
+.card {
+	background-color: var(--white-color);
+	border-radius: 10px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card{
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	margin: 20px;
+	align-content: center;
+	letter-spacing: 1px;
+}
+
+.card__row--nickname ,.card__btn{
+	background-color: var(--primary-color);
+	color: var(--white-color);
+}
+
+.card__number {
+	opacity: 0.6;
+	margin-right:3em;
+	font-size: 1em;
+	text-transform: uppercase;
+}
+
+.card__text {
+	margin: 10px 0;
+}
+
+.card__row--location,.card__row--nickname {
+	padding: 30px;
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.table-container{
+	display: flex;
+	font-size:2em;
+}
+
+.tableHead{
+	background: var(--primary-color);
+	color: var(--white-color);
+
+}
+
+.tableRow{
+	padding: 10px;
+}
+
+tbody{
+	background: var(--white-color);
+	color: black;
+}
+
+@media (max-width: 800px) {
+	.card {
+		grid-template-columns: 100%;
+	}
+}

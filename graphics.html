@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráfico-JSON</title>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		* {
+			margin: 0rem;
+			padding: 0rem;
+			box-sizing: border-box;
+			font-family: sans-serif;
+		}
+
+		main {
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#grafico-container {
+			width: 300px;
+			height: 400px;
+			border: solid 1px silver;
+			border-radius: 8px;
+			padding: 1em;
+		}
+	</style>
+
+</head>
+
+<body>
+	<main>
+		<!-- Contenedor del gráfico -->
+		<div id="grafico-container">
+			<canvas id="grafico-clima" style="width: 100%; height: 100%;"></canvas>
+		</div>
+
+	</main>
+
+
+
+	<script type="text/javascript">
+		// variable que se usará para instanciar el gráfico
+		let grafico = null;
+		let temperatura = [];
+		let humedad = [];
+		let viento = [];
+		let periodo = [];
+		// Una vez cargado todo el DOM 
+		document.addEventListener("DOMContentLoaded", () => {
+			refreshData(10);
+			const refreshInformation = setInterval(() => {
+				deleteFirstElement();
+				refreshData();
+			}, 10000);
+		})
+
+		function deleteFirstElement() {
+			temperatura.shift();
+			humedad.shift();
+			viento.shift();
+			periodo.shift();
+
+		}
+
+
+		function refreshData(amount) {
+			const currentUrl = window.location.href;
+			const urlVariables = currentUrl.substring(currentUrl.lastIndexOf('?') + 1);
+			// Leemos los datos del JSON
+			loadJson(`API/estaciones.php?${urlVariables}`, amount).then(data => {
+
+				// llamamos a la función que ordena los datos de un registro y genera el gráfico
+				console.log(data)
+				procesaDatos(data)
+
+			})
+		}
+
+		// Lee el json con los datos
+		async function loadJson(url, limit = 1) {
+			const response = await fetch(url + "&limit=" + limit);
+			const data = await response.json();
+			return data;
+		}
+
+
+		// Toma los datos de un registro y los agrega a los vectores correspondientes, luego los agrega a los datos para generar el gráfico
+		function procesaDatos(datos) {
+
+			// recorremos datos
+			for (let i = 0; i < datos.length; i++) {
+
+				// Agregamos el nuevo dato como una posición dentro del vector
+				periodo.push(datos[i].fecha.substring(datos[i].fecha.lastIndexOf(' ') + 1))
+				temperatura.push(datos[i].temperatura)
+				humedad.push(datos[i].humedad)
+				viento.push(datos[i].viento)
+			}
+
+			// Valores que se grafican
+			const valores = {
+				labels: periodo,
+				datasets: [{
+					label: 'Temperatura', // detalle de la linea graficada
+					backgroundColor: 'rgba(39, 174, 96 , 0.5)', // color circulo
+					borderColor: 'rgb(39, 174, 96)', // color linea
+					data: temperatura // valores a graficar
+				}, {
+					label: 'Humedad',
+					backgroundColor: 'rgba(192, 57, 43 , 0.5)',
+					borderColor: 'rgb(192, 57, 43 )',
+					data: humedad
+				}, {
+					label: 'Viento',
+					backgroundColor: 'rgba(39, 55, 70 ,0.5)',
+					borderColor: 'rgb(39, 55, 70)',
+					data: viento
+				}]
+			}
+
+			// muestra el gráfico con el título
+			pintaGrafico(valores, 'Gráfico meteorológico');
+		}
+
+
+		// muestra el gráfico
+		function pintaGrafico(valores, titulo) {
+			// Opciones generales del gráfico
+			const options = {
+				indexAxis: 'x', // Orden de los ejes del gráfico
+				plugins: {
+					title: {
+						display: true, // Mostrar el título
+						text: titulo, // Texto del título
+						font: {
+							size: 30 // Tamaño del título
+						}
+					}
+				},
+				animation: {
+					duration: 0
+				},
+				responsive: false,
+				responsiveAnimationDuration: 0,
+			}
+
+			// Información con la cual se genera el gráfico
+			const config = {
+				type: 'line',
+				data: valores,
+				options: options
+			}
+
+			if (grafico) {
+				grafico.destroy();
+			}
+
+
+			// Crea el gráfico dentro del canvas
+			grafico = new Chart(document.querySelector("#grafico-clima"), config)
+		}
+	</script>
+
+</body>
+
+</html>
